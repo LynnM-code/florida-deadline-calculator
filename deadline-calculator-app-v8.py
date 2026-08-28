@@ -505,10 +505,7 @@ with tab2:
     Here are simplified chronological summaries of key transaction dates, designed to be easily shared with your buyers or sellers. 
     All deadlines are sorted chronologically in **ascending order** so you can track each requirement down the calendar list.
     """)
-
-     if scheduled_inspection_date:
-            nab_milestones.append(("Inspections: Actual Scheduled Home Inspection", scheduled_inspection_date))
-         
+       
     # 1. Compile and Sort NABOR
     nab_milestones = []
     if nab_dep_date:
@@ -519,6 +516,8 @@ with tab2:
         nab_milestones.append(("Financing: Buyer's Loan Application Deadline", nab_loan_app))
     if has_inspection == "Yes" and nab_insp_date:
         nab_milestones.append(("Inspections: Inspection Period Expiration", nab_insp_date))
+        if scheduled_inspection_date:
+           nab_milestones.append(("Inspections: Actual Scheduled Home Inspection", scheduled_inspection_date))
         if contract_style == "Standard" and nab_election:
             nab_milestones.append(("Inspections: Buyer Defective Items Notice Election", nab_election))
             if nab_seller_resp:
