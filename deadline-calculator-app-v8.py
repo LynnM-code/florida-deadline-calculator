@@ -643,7 +643,7 @@ with tab2:
         t_list.append((f"Buyers' Initial Deposit (${initial_dep_val:,.0f}) {dep_offset} Days", nab_dep_date if is_nabor else fb_dep_date))
         
         if has_inspection == "Yes":
-             t_list.append(("Inspection", scheduled_inspection_date))
+            t_list.append(("Inspection", scheduled_inspection_date))
             t_list.append((f"Buyer's Due Diligence Period ({insp_offset} Days)", nab_insp_date if is_nabor else fb_insp_date))
             if is_nabor and contract_style == "Standard" and nab_election:
                 t_list.append((f"Buyer Defective Items Notice Election ({election_offset} Days)", nab_election))
