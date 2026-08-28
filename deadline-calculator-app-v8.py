@@ -195,6 +195,16 @@ st.sidebar.subheader("⚙️ Contract Options")
 funding_type = st.sidebar.selectbox("Funding Type", ["Financing", "Cash"], index=1, help="If Cash is selected, Loan Application and Financing Contingency are omitted.") # Cash by default to match example
 has_inspection = st.sidebar.selectbox("Inspection Option", ["Yes", "No"], index=0, help="If No is selected, all inspection-related deadlines are omitted.")
 
+# --- INSERT START ---
+scheduled_inspection_date = None
+if has_inspection == "Yes":
+    scheduled_inspection_date = st.sidebar.date_input(
+        "Actual Scheduled Inspection Date",
+        value=None,  # Field starts completely empty (TBD)
+        help="Select the date the physical home inspection is set to take place."
+    )
+# --- INSERT END ---
+
 # Contract style applies differently depending on active view
 is_nabor_active = active_view == "NABOR (Collier/Lee County)" or active_view == "📊 Comparative View (Both)"
 is_fb_active = active_view == "FAR/BAR (Statewide Standard)" or active_view == "📊 Comparative View (Both)"
@@ -495,7 +505,10 @@ with tab2:
     Here are simplified chronological summaries of key transaction dates, designed to be easily shared with your buyers or sellers. 
     All deadlines are sorted chronologically in **ascending order** so you can track each requirement down the calendar list.
     """)
-    
+
+     if scheduled_inspection_date:
+            nab_milestones.append(("Inspections: Actual Scheduled Home Inspection", scheduled_inspection_date))
+         
     # 1. Compile and Sort NABOR
     nab_milestones = []
     if nab_dep_date:
@@ -537,6 +550,8 @@ with tab2:
         fb_milestones.append(("Financing: Buyer's Loan Application Deadline", fb_loan_app))
     if has_inspection == "Yes" and fb_insp_date:
         fb_milestones.append(("Inspections: Inspection / Due Diligence Expiration", fb_insp_date))
+        if scheduled_inspection_date:
+            fb_milestones.append(("Inspections: Actual Scheduled Home Inspection", scheduled_inspection_date))
     if enable_assoc and fb_assoc:
         fb_milestones.append(("Association: Buyer Membership Filing Deadline", fb_assoc))
     if enable_condo and fb_condo:
@@ -629,7 +644,7 @@ with tab2:
         t_list.append((f"Buyers' Initial Deposit (${initial_dep_val:,.0f}) {dep_offset} Days", nab_dep_date if is_nabor else fb_dep_date))
         
         if has_inspection == "Yes":
-            t_list.append(("Inspection", None))
+             t_list.append(("Inspection", scheduled_inspection_date))
             t_list.append((f"Buyer's Due Diligence Period ({insp_offset} Days)", nab_insp_date if is_nabor else fb_insp_date))
             if is_nabor and contract_style == "Standard" and nab_election:
                 t_list.append((f"Buyer Defective Items Notice Election ({election_offset} Days)", nab_election))
