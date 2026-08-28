@@ -217,8 +217,8 @@ if enable_condo:
 enable_assoc = st.sidebar.checkbox("Include HOA/Association Timeline", value=True)
 assoc_date = None
 if enable_assoc:
-    assoc_date = st.sidebar.date_input("Association App Receipt Date", value=None)  #This keeps the field empty until a date is selected
-        help="Select the date the buyer received the condominium documents.
+    assoc_date = st.sidebar.date_input("Association App Receipt Date", value=None)  # This keeps the field empty until a date is selected
+        help="Select the date the buyer received the condominium documents."
 
 enable_dispute = has_inspection == "Yes" and contract_style == "Standard" and is_nabor_active
 election_date = None
