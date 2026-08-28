@@ -187,8 +187,8 @@ st.sidebar.markdown("---")
 st.sidebar.header("📅 Section 2: Key Base Dates")
 
 # Set default dates to match the user's example for instant verification
-eff_date = st.sidebar.date_input("Effective Date (Day 0)", datetime.date(2026, 8, 27))
-closing_date = st.sidebar.date_input("Scheduled Closing Date", datetime.date(2026, 9, 28))
+eff_date = st.sidebar.date_input("Effective Date (Day 0)", datetime.date.today()) # Default to today's date
+closing_date = st.sidebar.date_input("Scheduled Closing Date", value=None)  #This keeps the field empty until a date is selected
 
 # Options and Toggles for contract terms
 st.sidebar.subheader("⚙️ Contract Options")
@@ -196,8 +196,8 @@ funding_type = st.sidebar.selectbox("Funding Type", ["Financing", "Cash"], index
 has_inspection = st.sidebar.selectbox("Inspection Option", ["Yes", "No"], index=0, help="If No is selected, all inspection-related deadlines are omitted.")
 
 # Contract style applies differently depending on active view
-is_nabor_active = active_view == "🏢 NABOR (Collier/Lee County)" or active_view == "📊 Comparative View (Both)"
-is_fb_active = active_view == "⚖️ FAR/BAR (Statewide Standard)" or active_view == "📊 Comparative View (Both)"
+is_nabor_active = active_view == "NABOR (Collier/Lee County)" or active_view == "📊 Comparative View (Both)"
+is_fb_active = active_view == "FAR/BAR (Statewide Standard)" or active_view == "📊 Comparative View (Both)"
 
 contract_style = "AS-IS"
 if is_nabor_active:
@@ -205,49 +205,50 @@ if is_nabor_active:
 
 # Deposit amounts
 st.sidebar.subheader("💰 Escrow Deposit Amounts")
-initial_dep_val = st.sidebar.number_input("Initial Deposit Amount ($)", value=65000, step=1000, help="Used to customize the chronological timelines.")
-additional_dep_val = st.sidebar.number_input("Additional Deposit Amount ($)", value=68500, step=1000, help="Used to customize the chronological timelines.")
+initial_dep_val = st.sidebar.number_input("Initial Deposit Amount ($)", value=5000, step=1000, help="Used to customize the chronological timelines.")
+additional_dep_val = st.sidebar.number_input("Additional Deposit Amount ($)", value=1500, step=1000, help="Used to customize the chronological timelines.")
 
 # Optional inputs (with toggles)
 enable_condo = st.sidebar.checkbox("Include Condo Documents Timelines", value=True)
 condo_date = None
 if enable_condo:
-    condo_date = st.sidebar.date_input("Condo Docs Delivery Date", datetime.date(2026, 8, 27)) # Default to Aug 27 to match example
+    condo_date = st.sidebar.date_input("Condo Docs Delivery Date", datetime.date.today()) # Default to today's date
 
 enable_assoc = st.sidebar.checkbox("Include HOA/Association Timeline", value=True)
 assoc_date = None
 if enable_assoc:
-    assoc_date = st.sidebar.date_input("Association App Receipt Date", datetime.date(2026, 8, 27)) # Default to Aug 27 to match example
+    assoc_date = st.sidebar.date_input("Association App Receipt Date", value=None)  #This keeps the field empty until a date is selected
+        help="Select the date the buyer received the condominium documents.
 
 enable_dispute = has_inspection == "Yes" and contract_style == "Standard" and is_nabor_active
 election_date = None
 seller_resp_date = None
 if enable_dispute:
-    election_date = st.sidebar.date_input("Inspection Election Delivery Date", datetime.date(2026, 9, 16))
-    seller_resp_date = st.sidebar.date_input("Seller Response to Election Date", datetime.date(2026, 9, 20))
+    election_date = st.sidebar.date_input("Inspection Election Delivery Date", value=None)  #This keeps the field empty until a date is selected
+    seller_resp_date = st.sidebar.date_input("Seller Response to Election Date", value=None)  #This keeps the field empty until a date is selected
 
 # Custom Offsets
 st.sidebar.markdown("---")
-st.sidebar.header("⏱️ Section 3: Custom Milestone Offsets")
+st.sidebar.header("Section 3: Custom Milestone Offsets")
 
-with st.sidebar.expander("💼 Escrow & Financing Offsets"):
+with st.sidebar.expander("Escrow & Financing Offsets"):
     dep_offset = st.number_input("Initial Deposit (Days after)", value=3, min_value=0)
-    add_dep_offset = st.number_input("Additional Deposit (Days after)", value=8, min_value=0) # Default to 8 to match example
+    add_dep_offset = st.number_input("Additional Deposit (Days after)", value=15, min_value=0) # Default to 8 to match example
     loan_app_offset = st.number_input("Loan Application (Days after)", value=5, min_value=0)
     nab_fin_offset = st.number_input("NABOR Financing (Days after)", value=45, min_value=0)
     fb_fin_offset = st.number_input("FAR/BAR Financing (Days after)", value=30, min_value=0)
 
-with st.sidebar.expander("🔍 Inspection & Dispute Offsets"):
-    insp_offset = st.number_input("Inspection Period (Days after)", value=7, min_value=0) # Default to 7 to match example
+with st.sidebar.expander("Inspection & Dispute Offsets"):
+    insp_offset = st.number_input("Inspection Period (Days after)", value=15, min_value=0) # Default to 7 to match example
     election_offset = st.number_input("Buyer Election (Days after Inspection end)", value=5, min_value=0)
     seller_offset = st.number_input("Seller Response (Days after Buyer Election)", value=10, min_value=0)
     terminate_offset = st.number_input("Buyer Terminate Right (Days after Seller Response)", value=5, min_value=0)
 
-with st.sidebar.expander("🏢 Association & Condo Offsets"):
+with st.sidebar.expander("🏢Association & Condo Offsets"):
     assoc_app_offset = st.number_input("Association Filing (Days after receipt)", value=10, min_value=0)
     condo_resciss_offset = st.number_input("Condo Rescission Period (Business Days)", value=7, min_value=0)
 
-with st.sidebar.expander("📋 Title & Survey Offsets (Backward-looking)"):
+with st.sidebar.expander("Title & Survey Offsets (Backward-looking)"):
     title_offset = st.number_input("Title Evidence (Days prior to Closing)", value=15, min_value=0)
     survey_offset = st.number_input("Survey Deadline (Days prior to Closing)", value=15, min_value=0)
 
@@ -329,10 +330,10 @@ tab_title_1 = "🎛️ Detailed Comparative Calculator"
 tab_title_2 = "📋 Simplified Client Summaries"
 
 if active_view == "🏢 NABOR (Collier/Lee County)":
-    tab_title_1 = "🏢 NABOR Detailed Calculator"
+    tab_title_1 = "NABOR Detailed Calculator"
     tab_title_2 = "📋 NABOR Client Roadmap"
 elif active_view == "⚖️ FAR/BAR (Statewide Standard)":
-    tab_title_1 = "⚖️ FAR/BAR Detailed Calculator"
+    tab_title_1 = "FAR/BAR Detailed Calculator"
     tab_title_2 = "📋 FAR/BAR Client Roadmap"
 
 tab1, tab2 = st.tabs([tab_title_1, tab_title_2])
@@ -346,7 +347,7 @@ with tab1:
 
     if show_nabor:
         with (col1 if active_view == "📊 Comparative View (Both)" else st.container()):
-            st.header("🏢 NABOR Contract Milestones")
+            st.header("NABOR Contract Milestones")
             st.markdown("**Naples Area Board of Realtors Rules**")
             st.metric("Effective Date (Day 0)", eff_date.strftime("%A, %B %d, %Y"))
             
