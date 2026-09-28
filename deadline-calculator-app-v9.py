@@ -167,7 +167,7 @@ def calculate_business_days_deadline(base_date, days, holidays_cache=None):
 # -----------------------------------------------------------------------------------------
 st.set_page_config(page_title="Florida Real Estate Deadline Calculator v9", layout="wide")
 
-st.title("🌴 Florida Real Estate Contract Deadline Calculator v9.0")
+st.title("Florida Real Estate Contract Deadline Calculator v9.0")
 st.markdown("""
 An advanced, customizable deadline calculator featuring **Cash vs. Financing toggles**, **AS-IS vs. Standard Inspection toggles**, **Buyer's Additional Deposit**, and **dispute-specific inspection timelines** under **NABOR** and **FAR/BAR** rules.
 
@@ -175,7 +175,7 @@ An advanced, customizable deadline calculator featuring **Cash vs. Financing tog
 """)
 
 # Setup Sidebar Sections
-st.sidebar.header("🔑 Premium Key Activation")
+st.sidebar.header("Premium Key Activation")
 
 # Secret Key (You can change this password to whatever you want)
 CORRECT_PREMIUM_KEY = "FL-PREMIUM-2026"
@@ -190,44 +190,44 @@ user_key_input = st.sidebar.text_input(
 is_premium_active = user_key_input == CORRECT_PREMIUM_KEY
 
 if is_premium_active:
-    st.sidebar.success("🎉 Premium Access Granted!")
+    st.sidebar.success("Premium Access Granted!")
 else:
     if user_key_input != "":
-        st.sidebar.error("❌ Invalid License Key.")
+        st.sidebar.error("Invalid License Key.")
     else:
-        st.sidebar.warning("🔒 Running in Free Tier mode.")
+        st.sidebar.warning("Running in Free Tier mode.")
 
 st.sidebar.markdown("---")
-st.sidebar.header("🏢 Section 1: Active Workspace")
+st.sidebar.header("Section 1: Active Workspace")
 active_view = st.sidebar.selectbox(
     "Select Active Contract Form", 
-    ["🏢 NABOR (Collier/Lee County)", "⚖️ FAR/BAR (Statewide Standard)", "📊 Comparative View (Both)"],
+    ["NABOR (Collier/Lee County)", "FAR/BAR (Statewide Standard)", "Comparative View (Both)"],
     index=2,
     help="Isolate NABOR-only, FAR/BAR-only, or show both side-by-side."
 )
 
 st.sidebar.markdown("---")
-st.sidebar.header("📅 Section 2: Key Base Dates")
+st.sidebar.header("Section 2: Key Base Dates")
 
 # Set default dates to match the user's example for instant verification
 eff_date = st.sidebar.date_input("Effective Date (Day 0)", datetime.date(2026, 8, 27))
 closing_date = st.sidebar.date_input("Scheduled Closing Date", datetime.date(2026, 9, 28))
 
 # Options and Toggles for contract terms
-st.sidebar.subheader("⚙️ Contract Options")
+st.sidebar.subheader("Contract Options")
 funding_type = st.sidebar.selectbox("Funding Type", ["Financing", "Cash"], index=1, help="If Cash is selected, Loan Application and Financing Contingency are omitted.") # Cash by default to match example
 has_inspection = st.sidebar.selectbox("Inspection Option", ["Yes", "No"], index=0, help="If No is selected, all inspection-related deadlines are omitted.")
 
 # Contract style applies differently depending on active view
-is_nabor_active = active_view == "🏢 NABOR (Collier/Lee County)" or active_view == "📊 Comparative View (Both)"
-is_fb_active = active_view == "⚖️ FAR/BAR (Statewide Standard)" or active_view == "📊 Comparative View (Both)"
+is_nabor_active = active_view == "NABOR (Collier/Lee County)" or active_view == "Comparative View (Both)"
+is_fb_active = active_view == "FAR/BAR (Statewide Standard)" or active_view == "Comparative View (Both)"
 
 contract_style = "AS-IS"
 if is_nabor_active:
     contract_style = st.sidebar.selectbox("Contract Style", ["AS-IS", "Standard"], index=0, help="NABOR Standard triggers the structured 5-10-5 repair dispute steps. AS-IS contracts omit these steps.")
 
 # Deposit amounts
-st.sidebar.subheader("💰 Escrow Deposit Amounts")
+st.sidebar.subheader("Escrow Deposit Amounts")
 initial_dep_val = st.sidebar.number_input("Initial Deposit Amount ($)", value=65000, step=1000, help="Used to customize the chronological timelines.")
 additional_dep_val = st.sidebar.number_input("Additional Deposit Amount ($)", value=68500, step=1000, help="Used to customize the chronological timelines.")
 
@@ -246,26 +246,26 @@ enable_dispute = has_inspection == "Yes" and contract_style == "Standard" and is
 
 # Custom Offsets
 st.sidebar.markdown("---")
-st.sidebar.header("⏱️ Section 3: Custom Milestone Offsets")
+st.sidebar.header("Section 3: Custom Milestone Offsets")
 
-with st.sidebar.expander("💼 Escrow & Financing Offsets"):
+with st.sidebar.expander("Escrow & Financing Offsets"):
     dep_offset = st.number_input("Initial Deposit (Days after)", value=3, min_value=0)
     add_dep_offset = st.number_input("Additional Deposit (Days after)", value=8, min_value=0) # Default to 8 to match example
     loan_app_offset = st.number_input("Loan Application (Days after)", value=5, min_value=0)
     nab_fin_offset = st.number_input("NABOR Financing (Days after)", value=45, min_value=0)
     fb_fin_offset = st.number_input("FAR/BAR Financing (Days after)", value=30, min_value=0)
 
-with st.sidebar.expander("🔍 Inspection & Dispute Offsets"):
+with st.sidebar.expander("Inspection & Dispute Offsets"):
     insp_offset = st.number_input("Inspection Period (Days after)", value=7, min_value=0) # Default to 7 to match example
     election_offset = st.number_input("Buyer Election (Days after Inspection end)", value=5, min_value=0)
     seller_offset = st.number_input("Seller Response (Days after Buyer Election)", value=10, min_value=0)
     terminate_offset = st.number_input("Buyer Terminate Right (Days after Seller Response)", value=5, min_value=0)
 
-with st.sidebar.expander("🏢 Association & Condo Offsets"):
+with st.sidebar.expander("Association & Condo Offsets"):
     assoc_app_offset = st.number_input("Association Filing (Days after receipt)", value=10, min_value=0)
     condo_resciss_offset = st.number_input("Condo Rescission Period (Business Days)", value=7, min_value=0)
 
-with st.sidebar.expander("📋 Title & Survey Offsets (Backward-looking)"):
+with st.sidebar.expander("Title & Survey Offsets (Backward-looking)"):
     title_offset = st.number_input("Title Evidence (Days prior to Closing)", value=15, min_value=0)
     survey_offset = st.number_input("Survey Deadline (Days prior to Closing)", value=15, min_value=0)
 
@@ -346,15 +346,15 @@ fb_survey, fb_survey_note = calculate_deadline(rolled_closing_fb, survey_offset,
 # -----------------------------------------------------------------------------------------
 # DEFINE TABS FOR DETAILED VS CLIENT VIEW
 # -----------------------------------------------------------------------------------------
-tab_title_1 = "🎛️ Detailed Comparative Calculator"
-tab_title_2 = "📋 Simplified Client Summaries"
+tab_title_1 = "Detailed Comparative Calculator"
+tab_title_2 = "Simplified Client Summaries"
 
-if active_view == "🏢 NABOR (Collier/Lee County)":
-    tab_title_1 = "🏢 NABOR Detailed Calculator"
-    tab_title_2 = "📋 NABOR Client Roadmap"
-elif active_view == "⚖️ FAR/BAR (Statewide Standard)":
-    tab_title_1 = "⚖️ FAR/BAR Detailed Calculator"
-    tab_title_2 = "📋 FAR/BAR Client Roadmap"
+if active_view == "NABOR (Collier/Lee County)":
+    tab_title_1 = "NABOR Detailed Calculator"
+    tab_title_2 = "NABOR Client Roadmap"
+elif active_view == "FAR/BAR (Statewide Standard)":
+    tab_title_1 = "FAR/BAR Detailed Calculator"
+    tab_title_2 = "FAR/BAR Client Roadmap"
 
 tab1, tab2 = st.tabs([tab_title_1, tab_title_2])
 
@@ -362,135 +362,135 @@ with tab1:
     col1, col2 = st.columns(2)
 
     # Render columns depending on active_view
-    show_nabor = active_view == "🏢 NABOR (Collier/Lee County)" or active_view == "📊 Comparative View (Both)"
-    show_fb = active_view == "⚖️ FAR/BAR (Statewide Standard)" or active_view == "📊 Comparative View (Both)"
+    show_nabor = active_view == "NABOR (Collier/Lee County)" or active_view == "Comparative View (Both)"
+    show_fb = active_view == "FAR/BAR (Statewide Standard)" or active_view == "Comparative View (Both)"
 
     if show_nabor:
-        with (col1 if active_view == "📊 Comparative View (Both)" else st.container()):
-            st.header("🏢 NABOR Contract Milestones")
+        with (col1 if active_view == "Comparative View (Both)" else st.container()):
+            st.header("NABOR Contract Milestones")
             st.markdown("**Naples Area Board of Realtors Rules**")
             st.metric("Effective Date (Day 0)", eff_date.strftime("%A, %B %d, %Y"))
             
-            st.subheader("🗓️ Calendar Milestones")
+            st.subheader("Calendar Milestones")
             
-            st.write(f"🟢 **Initial Escrow Deposit**: {nab_dep_date.strftime('%A, %b %d, %Y')} *({dep_offset} days after)*")
-            if nab_dep_note: st.caption(f"ℹ {nab_dep_note}")
+            st.write(f"**Initial Escrow Deposit**: {nab_dep_date.strftime('%A, %b %d, %Y')} *({dep_offset} days after)*")
+            if nab_dep_note: st.caption(f"Note: {nab_dep_note}")
             
-            st.write(f"🔵 **Buyer's Additional Deposit**: {nab_add_dep_date.strftime('%A, %b %d, %Y')} *({add_dep_offset} days after)*")
-            if nab_add_dep_note: st.caption(f"ℹ {nab_add_dep_note}")
+            st.write(f"**Buyer's Additional Deposit**: {nab_add_dep_date.strftime('%A, %b %d, %Y')} *({add_dep_offset} days after)*")
+            if nab_add_dep_note: st.caption(f"Note: {nab_add_dep_note}")
             
             if funding_type == "Financing" and nab_loan_app:
-                st.write(f"📝 **Buyer's Loan Application**: {nab_loan_app.strftime('%A, %b %d, %Y')} *({loan_app_offset} days after)*")
-                if nab_loan_note: st.caption(f"ℹ {nab_loan_note}")
+                st.write(f"**Buyer's Loan Application**: {nab_loan_app.strftime('%A, %b %d, %Y')} *({loan_app_offset} days after)*")
+                if nab_loan_note: st.caption(f"Note: {nab_loan_note}")
             else:
-                st.write(f"📝 **Buyer's Loan Application**: 🚫 **{nab_loan_note}**")
+                st.write(f"**Buyer's Loan Application**: **{nab_loan_note}**")
             
             if has_inspection == "Yes" and nab_insp_date:
-                st.write(f"🔍 **Inspection / Due Diligence Period**: {nab_insp_date.strftime('%A, %b %d, %Y')} *({insp_offset} days after)*")
-                if nab_insp_note: st.caption(f"ℹ {nab_insp_note}")
+                st.write(f"**Inspection / Due Diligence Period**: {nab_insp_date.strftime('%A, %b %d, %Y')} *({insp_offset} days after)*")
+                if nab_insp_note: st.caption(f"Note: {nab_insp_note}")
                 
                 if contract_style == "Standard" and nab_election:
-                    st.write(f"✏️ **Buyer Election of Defective Items**: {nab_election.strftime('%A, %b %d, %Y')} *({election_offset} days after inspection)*")
-                    if nab_election_note: st.caption(f"ℹ {nab_election_note}")
+                    st.write(f"**Buyer Election of Defective Items**: {nab_election.strftime('%A, %b %d, %Y')} *({election_offset} days after inspection)*")
+                    if nab_election_note: st.caption(f"Note: {nab_election_note}")
                     
                     if nab_seller_resp:
-                        st.write(f"🤝 **Seller's Response to Election**: {nab_seller_resp.strftime('%A, %b %d, %Y')} *({seller_offset} days after buyer election)*")
-                        if nab_seller_note: st.caption(f"ℹ {nab_seller_note}")
+                        st.write(f"**Seller's Response to Election**: {nab_seller_resp.strftime('%A, %b %d, %Y')} *({seller_offset} days after buyer election)*")
+                        if nab_seller_note: st.caption(f"Note: {nab_seller_note}")
                         
                     if nab_terminate:
-                        st.write(f"❌ **Buyer's Right to Terminate**: {nab_terminate.strftime('%A, %b %d, %Y')} *({terminate_offset} days after seller response)*")
-                        if nab_terminate_note: st.caption(f"ℹ {nab_terminate_note}")
+                        st.write(f"**Buyer's Right to Terminate**: {nab_terminate.strftime('%A, %b %d, %Y')} *({terminate_offset} days after seller response)*")
+                        if nab_terminate_note: st.caption(f"Note: {nab_terminate_note}")
                 else:
-                    st.write(f"✏️ **Inspection Repairs / Disputes**: 🚫 **{nab_election_note}**")
+                    st.write(f"**Inspection Repairs / Disputes**: **{nab_election_note}**")
             else:
-                st.write(f"🔍 **Inspection / Due Diligence**: 🚫 **{nab_insp_note}**")
+                st.write(f"**Inspection / Due Diligence**: **{nab_insp_note}**")
                 
             if enable_assoc and nab_assoc:
-                st.write(f"📄 **Buyer Application for Association Approval**: {nab_assoc.strftime('%A, %b %d, %Y')} *({assoc_app_offset} days after receipt)*")
-                if nab_assoc_note: st.caption(f"ℹ {nab_assoc_note}")
+                st.write(f"**Buyer Application for Association Approval**: {nab_assoc.strftime('%A, %b %d, %Y')} *({assoc_app_offset} days after receipt)*")
+                if nab_assoc_note: st.caption(f"Note: {nab_assoc_note}")
                 
             if enable_condo and nab_condo:
-                st.write(f"🏢 **Condominium Rescission Period**: {nab_condo.strftime('%A, %b %d, %Y')} *({condo_resciss_offset} Business Days after receipt)*")
-                if nab_condo_note: st.caption(f"ℹ {nab_condo_note}")
+                st.write(f"**Condominium Rescission Period**: {nab_condo.strftime('%A, %b %d, %Y')} *({condo_resciss_offset} Business Days after receipt)*")
+                if nab_condo_note: st.caption(f"Note: {nab_condo_note}")
                 
             if funding_type == "Financing" and nab_fin:
-                st.write(f"💰 **Financing Contingency**: {nab_fin.strftime('%A, %b %d, %Y')} *({nab_fin_offset} days after)*")
-                if nab_fin_note: st.caption(f"ℹ {nab_fin_note}")
+                st.write(f"**Financing Contingency**: {nab_fin.strftime('%A, %b %d, %Y')} *({nab_fin_offset} days after)*")
+                if nab_fin_note: st.caption(f"Note: {nab_fin_note}")
             else:
-                st.write(f"💰 **Financing Contingency**: 🚫 **{nab_fin_note}**")
+                st.write(f"**Financing Contingency**: **{nab_fin_note}**")
             
-            st.write(f"📋 **Title Evidence**: {nab_title.strftime('%A, %b %d, %Y')} *({title_offset} days prior)*")
-            if nab_title_note: st.caption(f"ℹ {nab_title_note}")
+            st.write(f"**Title Evidence**: {nab_title.strftime('%A, %b %d, %Y')} *({title_offset} days prior)*")
+            if nab_title_note: st.caption(f"Note: {nab_title_note}")
             
-            st.write(f"📐 **Survey Deadline**: {nab_survey.strftime('%A, %b %d, %Y')} *({survey_offset} days prior)*")
-            if nab_survey_note: st.caption(f"ℹ {nab_survey_note}")
+            st.write(f"**Survey Deadline**: {nab_survey.strftime('%A, %b %d, %Y')} *({survey_offset} days prior)*")
+            if nab_survey_note: st.caption(f"Note: {nab_survey_note}")
             
-            st.write(f"🚶 **Buyer Walk-through Inspection**: Prior to Closing Date / {rolled_closing_nab.strftime('%A, %b %d, %Y')} *(or possession if earlier)*")
+            st.write(f"**Buyer Walk-through Inspection**: Prior to Closing Date / {rolled_closing_nab.strftime('%A, %b %d, %Y')} *(or possession if earlier)*")
             
-            st.metric("🔒 Rolled Closing Date", rolled_closing_nab.strftime("%A, %B %d, %Y"))
-            if closing_nab_note: st.caption(f"ℹ {closing_nab_note}")
+            st.metric("Rolled Closing Date", rolled_closing_nab.strftime("%A, %B %d, %Y"))
+            if closing_nab_note: st.caption(f"Note: {closing_nab_note}")
 
     if show_fb:
-        with (col2 if active_view == "📊 Comparative View (Both)" else st.container()):
-            st.header("⚖️ FAR/BAR Contract Milestones")
+        with (col2 if active_view == "Comparative View (Both)" else st.container()):
+            st.header("FAR/BAR Contract Milestones")
             st.markdown("**Florida Realtors/Florida Bar Rules**")
             st.metric("Effective Date (Day 0)", eff_date.strftime("%A, %B %d, %Y"))
             
-            st.subheader("🗓️ Calendar Milestones")
+            st.subheader("Calendar Milestones")
             
-            st.write(f"🟢 **Initial Escrow Deposit**: {fb_dep_date.strftime('%A, %b %d, %Y')} *({dep_offset} days after)*")
-            if fb_dep_note: st.caption(f"ℹ {fb_dep_note}")
+            st.write(f"**Initial Escrow Deposit**: {fb_dep_date.strftime('%A, %b %d, %Y')} *({dep_offset} days after)*")
+            if fb_dep_note: st.caption(f"Note: {fb_dep_note}")
             
-            st.write(f"🔵 **Buyer's Additional Deposit**: {fb_add_dep_date.strftime('%A, %b %d, %Y')} *({add_dep_offset} days after)*")
-            if fb_add_dep_note: st.caption(f"ℹ {fb_add_dep_note}")
+            st.write(f"**Buyer's Additional Deposit**: {fb_add_dep_date.strftime('%A, %b %d, %Y')} *({add_dep_offset} days after)*")
+            if fb_add_dep_note: st.caption(f"Note: {fb_add_dep_note}")
             
             if funding_type == "Financing" and fb_loan_app:
-                st.write(f"📝 **Buyer's Loan Application**: {fb_loan_app.strftime('%A, %b %d, %Y')} *({loan_app_offset} days after)*")
-                if fb_loan_note: st.caption(f"ℹ {fb_loan_note}")
+                st.write(f"**Buyer's Loan Application**: {fb_loan_app.strftime('%A, %b %d, %Y')} *({loan_app_offset} days after)*")
+                if fb_loan_note: st.caption(f"Note: {fb_loan_note}")
             else:
-                st.write(f"📝 **Buyer's Loan Application**: 🚫 **{fb_loan_note}**")
+                st.write(f"**Buyer's Loan Application**: **{fb_loan_note}**")
             
             if has_inspection == "Yes" and fb_insp_date:
-                st.write(f"🔍 **Inspection / Due Diligence Period**: {fb_insp_date.strftime('%A, %b %d, %Y')} *({insp_offset} days after)*")
-                if fb_insp_note: st.caption(f"ℹ {fb_insp_note}")
-                st.write(f"✏️ **Inspection Repairs / Disputes**: 🚫 *FAR/BAR does not support post-inspection multi-step dispute timelines. All negotiations/cancellations must be executed within the inspection period.*")
+                st.write(f"**Inspection / Due Diligence Period**: {fb_insp_date.strftime('%A, %b %d, %Y')} *({insp_offset} days after)*")
+                if fb_insp_note: st.caption(f"Note: {fb_insp_note}")
+                st.write(f"**Inspection Repairs / Disputes**: *FAR/BAR does not support post-inspection multi-step dispute timelines. All negotiations/cancellations must be executed within the inspection period.*")
             else:
-                st.write(f"🔍 **Inspection / Due Diligence**: 🚫 **{fb_insp_note}**")
+                st.write(f"**Inspection / Due Diligence**: **{fb_insp_note}**")
                 
             if enable_assoc and fb_assoc:
-                st.write(f"📄 **Buyer Application for Association Approval**: {fb_assoc.strftime('%A, %b %d, %Y')} *({assoc_app_offset} days after receipt)*")
-                if fb_assoc_note: st.caption(f"ℹ {fb_assoc_note}")
+                st.write(f"**Buyer Application for Association Approval**: {fb_assoc.strftime('%A, %b %d, %Y')} *({assoc_app_offset} days after receipt)*")
+                if fb_assoc_note: st.caption(f"Note: {fb_assoc_note}")
                 
             if enable_condo and fb_condo:
-                st.write(f"🏢 **Condominium Rescission Period**: {fb_condo.strftime('%A, %b %d, %Y')} *({condo_resciss_offset} Business Days after receipt)*")
-                if fb_condo_note: st.caption(f"ℹ {fb_condo_note}")
+                st.write(f"**Condominium Rescission Period**: {fb_condo.strftime('%A, %b %d, %Y')} *({condo_resciss_offset} Business Days after receipt)*")
+                if fb_condo_note: st.caption(f"Note: {fb_condo_note}")
                 
             if funding_type == "Financing" and fb_fin:
-                st.write(f"💰 **Financing Contingency**: {fb_fin.strftime('%A, %b %d, %Y')} *({fb_fin_offset} days after)*")
-                if fb_fin_note: st.caption(f"ℹ {fb_fin_note}")
+                st.write(f"**Financing Contingency**: {fb_fin.strftime('%A, %b %d, %Y')} *({fb_fin_offset} days after)*")
+                if fb_fin_note: st.caption(f"Note: {fb_fin_note}")
             else:
-                st.write(f"💰 **Financing Contingency**: 🚫 **{fb_fin_note}**")
+                st.write(f"**Financing Contingency**: **{fb_fin_note}**")
             
-            st.write(f"📋 **Title Evidence**: {fb_title.strftime('%A, %b %d, %Y')} *({title_offset} days prior)*")
-            if fb_title_note: st.caption(f"ℹ {fb_title_note}")
+            st.write(f"**Title Evidence**: {fb_title.strftime('%A, %b %d, %Y')} *({title_offset} days prior)*")
+            if fb_title_note: st.caption(f"Note: {fb_title_note}")
             
-            st.write(f"📐 **Survey Deadline**: {fb_survey.strftime('%A, %b %d, %Y')} *({survey_offset} days prior)*")
-            if fb_survey_note: st.caption(f"ℹ {fb_survey_note}")
+            st.write(f"**Survey Deadline**: {fb_survey.strftime('%A, %b %d, %Y')} *({survey_offset} days prior)*")
+            if fb_survey_note: st.caption(f"Note: {fb_survey_note}")
             
-            st.write(f"🚶 **Buyer Walk-through Inspection**: Prior to Closing Date / {rolled_closing_fb.strftime('%A, %b %d, %Y')} *(or possession if earlier)*")
+            st.write(f"**Buyer Walk-through Inspection**: Prior to Closing Date / {rolled_closing_fb.strftime('%A, %b %d, %Y')} *(or possession if earlier)*")
             
-            st.metric("🔒 Rolled Closing Date", rolled_closing_fb.strftime("%A, %B %d, %Y"))
-            if closing_fb_note: st.caption(f"ℹ {closing_fb_note}")
+            st.metric("Rolled Closing Date", rolled_closing_fb.strftime("%A, %B %d, %Y"))
+            if closing_fb_note: st.caption(f"Note: {closing_fb_note}")
 
     st.markdown("---")
-    st.subheader("⚖️ Advanced Real Estate Rule Summary")
-    if active_view == "🏢 NABOR (Collier/Lee County)":
+    st.subheader("Advanced Real Estate Rule Summary")
+    if active_view == "NABOR (Collier/Lee County)":
         st.markdown("""
         - **Day Zero Rule**: Counting starts the day *after* the contract's Effective Date (meaning Day 1 is the day after).
         - **Condo Rescission**: Under Florida Statute § 718.503, the **7-day resale cancel period** counts strictly in **Business Days** (excluding weekends and federal holidays).
         - **NABOR Standard vs AS-IS**: Under a NABOR Standard contract, the inspection initiates a formal 5-10-5 day Repair/Dispute timeline (Buyer Election, Seller Response, Buyer right to terminate). Under a NABOR AS-IS contract, the buyer has a simple right to terminate before the inspection period expires, with no multi-step repair dispute process.
         """)
-    elif active_view == "⚖️ FAR/BAR (Statewide Standard)":
+    elif active_view == "FAR/BAR (Statewide Standard)":
         st.markdown("""
         - **Day Zero Rule**: Counting starts the day *after* the contract's Effective Date (meaning Day 1 is the day after).
         - **Condo Rescission**: Under Florida Statute § 718.503, the **7-day resale cancel period** counts strictly in **Business Days** (excluding weekends and federal holidays).
@@ -510,35 +510,35 @@ with tab1:
 with tab2:
     if not is_premium_active:
         # Paywall Block
-        st.markdown("### 🔒 Premium Features Locked")
+        st.markdown("### Premium Features Locked")
         st.info("The Chronological Client Roadmap, Side-by-Side copy summaries, and download functions are premium features. Enter the correct **Premium License Key** in the sidebar to unlock!")
         
         st.markdown("""
-        #### ⭐ What Premium Access Includes:
+        #### What Premium Access Includes:
         1. **Pre-Sorted Chronological Roadmap**: Reorders all milestones automatically from Contract Opening to Close.
         2. **Waived Timeline Filtering**: Dynamically removes Cash-based or inspection-waived deadlines so your client gets a clean calendar without N/A errors.
         3. **Copy & Paste Timeline Summary**: One-click formatting designed to fit perfectly inside an email or text message to your clients.
         4. **Local PDF Schedule Export**: Generate ready-to-print PDF contract calendars with one click.
         
-        *💡 Developer Note: The default testing password key for your demonstration is **`FL-PREMIUM-2026`***.
+        *Developer Note: The default testing password key for your demonstration is **`FL-PREMIUM-2026`***.
         """)
         
         # Display blurred/placeholder tables to show off the visual layout beautifully
         st.markdown("---")
-        st.subheader("👀 Preview of Premium Layout:")
+        st.subheader("Preview of Premium Layout:")
         
-        st.caption("🔒 *NABOR Chronological Summary (Simulated Preview)*")
+        st.caption("NABOR Chronological Summary (Simulated Preview)")
         mock_data_nab = """| Milestone Description | Milestone Date |
 | :--- | :--- |
-| 🟢 **Escrow: Initial Escrow Deposit ($65,000)** | Monday, Aug 31, 2026 |
-| 🛑 **Inspections: Inspection Expiration** | Thursday, Sep 03, 2026 |
-| 🟢 **Escrow: Additional Deposit ($68,500)** | Friday, Sep 04, 2026 |
-| 🏢 **Condominium: 7-Business-Day Rescission** | Tuesday, Sep 08, 2026 |
-| 🔒 **Closing: Actual Closing & Transfer** | Monday, Sep 28, 2026 |"""
+| **Escrow: Initial Escrow Deposit ($65,000)** | Monday, Aug 31, 2026 |
+| **Inspections: Inspection Expiration** | Thursday, Sep 03, 2026 |
+| **Escrow: Additional Deposit ($68,500)** | Friday, Sep 04, 2026 |
+| **Condominium: 7-Business-Day Rescission** | Tuesday, Sep 08, 2026 |
+| **Closing: Actual Closing & Transfer** | Monday, Sep 28, 2026 |"""
         st.markdown(mock_data_nab)
         
     else:
-        st.header("📋 Client Transaction Milestones Roadmap (Chronological)")
+        st.header("Client Transaction Milestones Roadmap (Chronological)")
         st.markdown("""
         Here are simplified chronological summaries of key transaction dates, designed to be easily shared with your buyers or sellers. 
         All deadlines are sorted chronologically in **ascending order** so you can track each requirement down the calendar list.
@@ -604,8 +604,8 @@ with tab2:
         sum_col1, sum_col2 = st.columns(2)
         
         if show_nabor:
-            with (sum_col1 if active_view == "📊 Comparative View (Both)" else st.container()):
-                st.subheader("🏢 NABOR Milestones Schedule")
+            with (sum_col1 if active_view == "Comparative View (Both)" else st.container()):
+                st.subheader("NABOR Milestones Schedule")
                 st.markdown(f"**Funding Type:** `{funding_type}` | **Inspection:** `{has_inspection}` " + (f"| **Style:** `{contract_style}`" if has_inspection == "Yes" else ""))
                 
                 # Build Markdown Table for NABOR
@@ -613,23 +613,23 @@ with tab2:
                 for desc, dt in sorted_nab:
                     dt_str = dt.strftime("%A, %b %d, %Y")
                     if "Closing" in desc:
-                        nab_table_md += f"| 🔒 **{desc}** | **{dt_str}** |\n"
+                        nab_table_md += f"| **{desc}** | **{dt_str}** |\n"
                     elif "Walk-through" in desc:
-                        nab_table_md += f"| 🚶 **{desc}** | *Prior to Closing on {dt.strftime('%b %d, %Y')}* |\n"
+                        nab_table_md += f"| **{desc}** | *Prior to Closing on {dt.strftime('%b %d, %Y')}* |\n"
                     elif "Deposit" in desc:
-                        nab_table_md += f"| 🟢 **{desc}** | **{dt_str}** |\n"
+                        nab_table_md += f"| **{desc}** | **{dt_str}** |\n"
                     elif "Rescission" in desc:
-                        nab_table_md += f"| 🏢 **{desc}** | **{dt_str}** |\n"
+                        nab_table_md += f"| **{desc}** | **{dt_str}** |\n"
                     elif "Expiration" in desc:
-                        nab_table_md += f"| 🛑 **{desc}** | **{dt_str}** |\n"
+                        nab_table_md += f"| **{desc}** | **{dt_str}** |\n"
                     else:
                         nab_table_md += f"| {desc} | {dt_str} |\n"
                         
                 st.markdown(nab_table_md)
                 
         if show_fb:
-            with (sum_col2 if active_view == "📊 Comparative View (Both)" else st.container()):
-                st.subheader("⚖️ FAR/BAR Milestones Schedule")
+            with (sum_col2 if active_view == "Comparative View (Both)" else st.container()):
+                st.subheader("FAR/BAR Milestones Schedule")
                 st.markdown(f"**Funding Type:** `{funding_type}` | **Inspection:** `{has_inspection}`")
                 
                 # Build Markdown Table for FAR/BAR
@@ -637,15 +637,15 @@ with tab2:
                 for desc, dt in sorted_fb:
                     dt_str = dt.strftime("%A, %b %d, %Y")
                     if "Closing" in desc:
-                        fb_table_md += f"| 🔒 **{desc}** | **{dt_str}** |\n"
+                        fb_table_md += f"| **{desc}** | **{dt_str}** |\n"
                     elif "Walk-through" in desc:
-                        fb_table_md += f"| 🚶 **{desc}** | *Prior to Closing on {dt.strftime('%b %d, %Y')}* |\n"
+                        fb_table_md += f"| **{desc}** | *Prior to Closing on {dt.strftime('%b %d, %Y')}* |\n"
                     elif "Deposit" in desc:
-                        fb_table_md += f"| 🟢 **{desc}** | **{dt_str}** |\n"
+                        fb_table_md += f"| **{desc}** | **{dt_str}** |\n"
                     elif "Rescission" in desc:
-                        fb_table_md += f"| 🏢 **{desc}** | **{dt_str}** |\n"
+                        fb_table_md += f"| **{desc}** | **{dt_str}** |\n"
                     elif "Expiration" in desc:
-                        fb_table_md += f"| 🛑 **{desc}** | **{dt_str}** |\n"
+                        fb_table_md += f"| **{desc}** | **{dt_str}** |\n"
                     else:
                         fb_table_md += f"| {desc} | {dt_str} |\n"
                         
@@ -655,7 +655,7 @@ with tab2:
         # DYNAMIC PLAIN TEXT CLIENT TIMELINES (REPRESENTING THE EXACT FORMAT REQUESTED)
         # -----------------------------------------------------------------------------------------
         st.markdown("---")
-        st.subheader("📋 Plain Text Client Timelines (Copy & Paste Summary)")
+        st.subheader("Plain Text Client Timelines (Copy & Paste Summary)")
         st.markdown("""
         These text summaries are generated using custom-aligned rows, **chronologically sorted in ascending order**, and formatted with your custom deposit amounts. 
         You can easily copy and paste them directly to your clients!
@@ -724,13 +724,13 @@ with tab2:
         copy_col1, copy_col2 = st.columns(2)
         
         if show_nabor:
-            with (copy_col1 if active_view == "📊 Comparative View (Both)" else st.container()):
-                st.markdown("#### 🏢 NABOR Client Timeline Summary")
+            with (copy_col1 if active_view == "Comparative View (Both)" else st.container()):
+                st.markdown("#### NABOR Client Timeline Summary")
                 st.code(nab_summary_str, language="text")
                 
         if show_fb:
-            with (copy_col2 if active_view == "📊 Comparative View (Both)" else st.container()):
-                st.markdown("#### ⚖️ FAR/BAR Client Timeline Summary")
+            with (copy_col2 if active_view == "Comparative View (Both)" else st.container()):
+                st.markdown("#### FAR/BAR Client Timeline Summary")
                 st.code(fb_summary_str, language="text")
 
 # -----------------------------------------------------------------------------------------
@@ -746,7 +746,7 @@ if is_premium_active:
 
     if show_nabor:
         summary_text += "===================================================================\n"
-        summary_text += "🏢 NABOR CONTRACT CHRONOLOGICAL ROADMAP:\n"
+        summary_text += "NABOR CONTRACT CHRONOLOGICAL ROADMAP:\n"
         summary_text += "===================================================================\n"
         for idx, (desc, dt) in enumerate(sorted_nab, 1):
             summary_text += f"{idx}. {desc}: {dt.strftime('%A, %b %d, %Y')}\n"
@@ -756,7 +756,7 @@ if is_premium_active:
 
     if show_fb:
         summary_text += "===================================================================\n"
-        summary_text += "⚖️ FAR/BAR CONTRACT CHRONOLOGICAL ROADMAP:\n"
+        summary_text += "FAR/BAR CONTRACT CHRONOLOGICAL ROADMAP:\n"
         summary_text += "===================================================================\n"
         for idx, (desc, dt) in enumerate(sorted_fb, 1):
             summary_text += f"{idx}. {desc}: {dt.strftime('%A, %b %d, %Y')}\n"
@@ -765,10 +765,10 @@ if is_premium_active:
         summary_text += fb_summary_str + "\n\n"
 
     st.sidebar.download_button(
-        label="📥 Download Chronological Schedule Summary",
+        label="Download Chronological Schedule Summary",
         data=summary_text,
         file_name="florida-contract-deadlines-schedule-v9.txt",
         mime="text/plain"
     )
 else:
-    st.sidebar.info("🔒 Upgrade to Premium to enable downloads.")
+    st.sidebar.info("Upgrade to Premium to enable downloads.")
