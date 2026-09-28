@@ -169,7 +169,7 @@ st.set_page_config(page_title="Florida Real Estate Deadline Calculator v9", layo
 
 st.title("🌴 Florida Real Estate Contract Deadline Calculator v9.0")
 st.markdown("""
-An advanced, customizable deadline calculator featuring **Cash vs. Financing toggles**, **AS-IS vs. Standard Inspection toggles**, **Buyer's Additional Deposit**, and **dispute-specific inspection timelines** under **NABOR** and **FAR/BAR** rules. 
+An advanced, customizable deadline calculator featuring **Cash vs. Financing toggles**, **AS-IS vs. Standard Inspection toggles**, **Buyer's Additional Deposit**, and **dispute-specific inspection timelines** under **NABOR** and **FAR/BAR** rules.
 
 **This edition includes a Premium Lock paywall system designed to help you monetize your application.**
 """)
@@ -243,11 +243,6 @@ if enable_assoc:
     assoc_date = st.sidebar.date_input("Association App Receipt Date", datetime.date(2026, 8, 27)) # Default to Aug 27 to match example
 
 enable_dispute = has_inspection == "Yes" and contract_style == "Standard" and is_nabor_active
-election_date = None
-seller_resp_date = None
-if enable_dispute:
-    election_date = st.sidebar.date_input("Inspection Election Delivery Date", datetime.date(2026, 9, 16))
-    seller_resp_date = st.sidebar.date_input("Seller Response to Election Date", datetime.date(2026, 9, 20))
 
 # Custom Offsets
 st.sidebar.markdown("---")
@@ -318,13 +313,16 @@ if has_inspection == "Yes":
     
     # If AS-IS, we do not trigger the repair dispute elections
     if contract_style == "Standard":
+        # Buyer Election is 5 days after the inspection period ends.
         nab_election, nab_election_note = calculate_deadline(nab_insp_date, election_offset, "forward", holidays_cache)
         fb_election, fb_election_note = calculate_deadline(fb_insp_date, election_offset, "forward", holidays_cache)
         
-        nab_seller_resp, nab_seller_note = calculate_deadline(election_date, seller_offset, "forward", holidays_cache)
+        # Seller Response is 10 days after Buyer Election.
+        nab_seller_resp, nab_seller_note = calculate_deadline(nab_election, seller_offset, "forward", holidays_cache)
         fb_seller_resp, fb_seller_note = (None, "N/A")
         
-        nab_terminate, nab_terminate_note = calculate_deadline(seller_resp_date, terminate_offset, "forward", holidays_cache)
+        # Buyer termination is 5 days after Seller Response.
+        nab_terminate, nab_terminate_note = calculate_deadline(nab_seller_resp, terminate_offset, "forward", holidays_cache)
         fb_terminate, fb_terminate_note = (None, "N/A")
     else:
         nab_election_note = "N/A - AS-IS Contract"
@@ -490,7 +488,7 @@ with tab1:
         st.markdown("""
         - **Day Zero Rule**: Counting starts the day *after* the contract's Effective Date (meaning Day 1 is the day after).
         - **Condo Rescission**: Under Florida Statute § 718.503, the **7-day resale cancel period** counts strictly in **Business Days** (excluding weekends and federal holidays).
-        - **NABOR Standard vs AS-IS**: Under a NABOR Standard contract, the inspection initiates a formal 5-10-5 day Repair/Dispute timeline (Buyer Election, Seller Response, Buyer right to terminate). Under a NABOR AS-IS contract, the buyer has a simple right to terminate *before* the Inspection Period expires, with no multi-step repair dispute processes.
+        - **NABOR Standard vs AS-IS**: Under a NABOR Standard contract, the inspection initiates a formal 5-10-5 day Repair/Dispute timeline (Buyer Election, Seller Response, Buyer right to terminate). Under a NABOR AS-IS contract, the buyer has a simple right to terminate before the inspection period expires, with no multi-step repair dispute process.
         """)
     elif active_view == "⚖️ FAR/BAR (Statewide Standard)":
         st.markdown("""
@@ -502,7 +500,7 @@ with tab1:
         st.markdown("""
         - **Day Zero Rule**: Both contracts agree that counting starts the day *after* the contract's Effective Date (meaning Day 1 is the day after).
         - **Condo Rescission**: Under Florida Statute § 718.503, the **7-day resale cancel period** counts strictly in **Business Days** (excluding weekends and federal holidays).
-        - **NABOR Standard vs AS-IS**: Under a NABOR Standard contract, the inspection initiates a formal 5-10-5 day Repair/Dispute timeline (Buyer Election, Seller Response, Buyer right to terminate). Under a NABOR AS-IS contract, the buyer has a simple right to terminate *before* the Inspection Period expires, with no multi-step repair dispute processes.
+        - **NABOR Standard vs AS-IS**: Under a NABOR Standard contract, the inspection initiates a formal 5-10-5 day Repair/Dispute timeline (Buyer Election, Seller Response, Buyer right to terminate). Under a NABOR AS-IS contract, the buyer has a simple right to terminate before the inspection period expires, with no multi-step repair dispute process.
         - **Walk-through**: Under both NABOR and FAR/BAR contracts, the buyer walk-through must occur **prior to the Closing Date** (or possession if earlier).
         """)
 
